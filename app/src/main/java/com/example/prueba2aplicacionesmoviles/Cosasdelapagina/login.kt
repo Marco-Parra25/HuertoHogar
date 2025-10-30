@@ -1,25 +1,11 @@
 package com.example.prueba2aplicacionesmoviles.Cosasdelapagina
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,12 +21,16 @@ fun LoginScreen(
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var showError by remember { mutableStateOf(false) }
+
+    val camposValidos = email.isNotBlank() && password.isNotBlank()
+    val scroll = rememberScrollState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
+            .padding(24.dp)
+            .verticalScroll(scroll),            // 👈 permite ver los botones en pantallas pequeñas
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // 🌿 Título
@@ -50,21 +40,26 @@ fun LoginScreen(
             style = MaterialTheme.typography.headlineMedium
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
-        // 🖼️ Imagen debajo del texto
+        // 🖼️ Imagen (si no cabe, podrás hacer scroll)
         Image(
-            painter = painterResource(id = R.drawable.huerto), // Cambia por tu imagen
+            painter = painterResource(id = R.drawable.huerto),
             contentDescription = "Logo Huerto Hogar",
             modifier = Modifier
                 .size(300.dp)
                 .padding(top = 8.dp)
         )
-        Spacer(modifier = Modifier.height(32.dp))
-        // 📨 Campo de correo
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // 📨 Correo
         OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange = {
+                email = it
+                showError = false
+            },
             label = { Text("Correo electrónico", color = Color.White) },
             textStyle = LocalTextStyle.current.copy(color = Color.White),
             colors = OutlinedTextFieldDefaults.colors(
@@ -77,10 +72,13 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 🔒 Campo de contraseña
+        // 🔒 Contraseña
         OutlinedTextField(
             value = password,
-            onValueChange = { password = it },
+            onValueChange = {
+                password = it
+                showError = false
+            },
             label = { Text("Contraseña", color = Color.White) },
             textStyle = LocalTextStyle.current.copy(color = Color.White),
             visualTransformation = PasswordVisualTransformation(),
@@ -92,12 +90,33 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
+        // ⚠️ Mensaje de error
+        if (showError) {
+            Text(
+                text = "Por favor completa todos los campos antes de continuar",
+                color = Color.Red,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .fillMaxWidth()
+            )
+        }
+
         Spacer(modifier = Modifier.height(24.dp))
 
-        // ✅ Botón iniciar sesión
+        // ✅ Botón iniciar sesión (siempre visible y habilitado)
         Button(
-            onClick = onLoginSuccess,
-            modifier = Modifier.fillMaxWidth()
+            onClick = {
+                if (camposValidos) {
+                    onLoginSuccess()
+                } else {
+                    showError = true
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF22C55E)
+            )
         ) {
             Text("Iniciar sesión")
         }
@@ -107,7 +126,10 @@ fun LoginScreen(
         // 📝 Botón registrarse
         Button(
             onClick = onRegister,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF22C55E)
+            )
         ) {
             Text("Registrarse")
         }

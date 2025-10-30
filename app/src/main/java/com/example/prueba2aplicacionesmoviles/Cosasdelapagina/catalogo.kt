@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -50,8 +51,11 @@ fun Catalogo(
                 )
                 Spacer(Modifier.height(6.dp))
                 Button(
-                    onClick = { onVerDetalle(index) },
-                    modifier = Modifier.fillMaxWidth()
+                        onClick = { onVerDetalle(index) },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF22C55E)
+                        )
                 ) {
                     Text("Ver detalle")
                 }
@@ -63,7 +67,10 @@ fun Catalogo(
         // 🛒 Ir al carrito
         Button(
             onClick = onIrCarrito,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF22C55E)
+                    )
         ) {
             Text("Ir al carrito 🛒")
         }
@@ -73,7 +80,10 @@ fun Catalogo(
         // 🔙 Botón para volver
         Button(
             onClick = onVolver,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF22C55E)
+            )
         ) {
             Text("Volver", color = Color.White)
         }

@@ -37,7 +37,7 @@ fun Prueba2AplicacionesMovilesTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
 
-    //prueba git
+
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {

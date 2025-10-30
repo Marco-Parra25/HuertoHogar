@@ -1,15 +1,7 @@
 package com.example.prueba2aplicacionesmoviles.Cosasdelapagina
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -25,15 +17,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.prueba2aplicacionesmoviles.R
+// 👇 IMPORTA LAS PANTALLAS NUEVAS
+import com.example.prueba2aplicacionesmoviles.Cosasdelapagina.LoginScreen
+import com.example.prueba2aplicacionesmoviles.Cosasdelapagina.RegisterScreen
 
-// 🔹 Función principal de navegación
 @Composable
 fun NavegacionPantallas(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
 
     NavHost(
         navController = navController,
-        startDestination = "login",
+        startDestination = "login", // 👈 empieza en la pantalla de inicio de sesión
         modifier = modifier
             .fillMaxSize()
             .statusBarsPadding()
@@ -46,7 +40,7 @@ fun NavegacionPantallas(modifier: Modifier = Modifier) {
             )
         }
 
-        // REGISTER
+        // 📝 REGISTER
         composable("register") {
             RegisterScreen { navController.popBackStack() }
         }
@@ -109,7 +103,7 @@ fun HomeMenu(
 
         // 🖼️ Imagen debajo del texto
         Image(
-            painter = painterResource(id = R.drawable.logo), // Cambia por tu imagen
+            painter = painterResource(id = R.drawable.logo), // 👈 usa tu imagen aquí
             contentDescription = "Logo Huerto Hogar",
             modifier = Modifier
                 .size(200.dp)

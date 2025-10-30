@@ -1,23 +1,8 @@
 package com.example.prueba2aplicacionesmoviles.Cosasdelapagina
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,6 +16,11 @@ fun RegisterScreen(onVolver: () -> Unit) {
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
 
+    var showError by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+
+    val camposValidos = nombre.isNotBlank() && email.isNotBlank() && password.isNotBlank() && confirmPassword.isNotBlank()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -38,7 +28,6 @@ fun RegisterScreen(onVolver: () -> Unit) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // 🌱 Título
         Text(
             text = "Crea tu cuenta 🌿",
             color = Color.White,
@@ -50,7 +39,10 @@ fun RegisterScreen(onVolver: () -> Unit) {
         // 🧍 Nombre
         OutlinedTextField(
             value = nombre,
-            onValueChange = { nombre = it },
+            onValueChange = {
+                nombre = it
+                showError = false
+            },
             label = { Text("Nombre completo", color = Color.White) },
             textStyle = LocalTextStyle.current.copy(color = Color.White),
             colors = OutlinedTextFieldDefaults.colors(
@@ -66,7 +58,10 @@ fun RegisterScreen(onVolver: () -> Unit) {
         // ✉️ Correo
         OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange = {
+                email = it
+                showError = false
+            },
             label = { Text("Correo electrónico", color = Color.White) },
             textStyle = LocalTextStyle.current.copy(color = Color.White),
             colors = OutlinedTextFieldDefaults.colors(
@@ -82,10 +77,13 @@ fun RegisterScreen(onVolver: () -> Unit) {
         // 🔒 Contraseña
         OutlinedTextField(
             value = password,
-            onValueChange = { password = it },
+            onValueChange = {
+                password = it
+                showError = false
+            },
             label = { Text("Contraseña", color = Color.White) },
-            visualTransformation = PasswordVisualTransformation(),
             textStyle = LocalTextStyle.current.copy(color = Color.White),
+            visualTransformation = PasswordVisualTransformation(),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color.White,
                 unfocusedBorderColor = Color.Gray,
@@ -99,10 +97,13 @@ fun RegisterScreen(onVolver: () -> Unit) {
         // 🔐 Confirmar contraseña
         OutlinedTextField(
             value = confirmPassword,
-            onValueChange = { confirmPassword = it },
+            onValueChange = {
+                confirmPassword = it
+                showError = false
+            },
             label = { Text("Confirmar contraseña", color = Color.White) },
-            visualTransformation = PasswordVisualTransformation(),
             textStyle = LocalTextStyle.current.copy(color = Color.White),
+            visualTransformation = PasswordVisualTransformation(),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color.White,
                 unfocusedBorderColor = Color.Gray,
@@ -111,11 +112,35 @@ fun RegisterScreen(onVolver: () -> Unit) {
             modifier = Modifier.fillMaxWidth()
         )
 
+        if (showError) {
+            Text(
+                text = errorMessage,
+                color = Color.Red,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+
         Spacer(modifier = Modifier.height(24.dp))
 
         // ✅ Botón Registrarse
         Button(
-            onClick = { /* Aquí puedes validar o guardar los datos */ },
+            onClick = {
+                when {
+                    !camposValidos -> {
+                        errorMessage = "Por favor completa todos los campos"
+                        showError = true
+                    }
+                    password != confirmPassword -> {
+                        errorMessage = "Las contraseñas no coinciden"
+                        showError = true
+                    }
+                    else -> {
+                        showError = false
+                        // Aquí podrías guardar los datos (cuando hagamos persistencia)
+                        onVolver()
+                    }
+                }
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Registrarse")
