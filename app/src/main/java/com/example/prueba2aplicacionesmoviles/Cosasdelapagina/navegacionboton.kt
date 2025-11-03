@@ -9,26 +9,30 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.prueba2aplicacionesmoviles.R
-// 👇 IMPORTA LAS PANTALLAS NUEVAS
-import com.example.prueba2aplicacionesmoviles.Cosasdelapagina.LoginScreen
-import com.example.prueba2aplicacionesmoviles.Cosasdelapagina.RegisterScreen
+import kotlinx.coroutines.launch
 
 @Composable
 fun NavegacionPantallas(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val dataStore = remember { SesionDataStore(context) }
 
     NavHost(
         navController = navController,
-        startDestination = "login", // 👈 empieza en la pantalla de inicio de sesión
+        startDestination = "login",
         modifier = modifier
             .fillMaxSize()
             .statusBarsPadding()
@@ -50,8 +54,22 @@ fun NavegacionPantallas(modifier: Modifier = Modifier) {
         composable("home") {
             HomeMenu(
                 onOpenCatalogo = { navController.navigate("catalogo") },
-                onOpenCarrito = { navController.navigate("carrito") }
+                onOpenCarrito = { navController.navigate("carrito") },
+                onOpenCamara = { navController.navigate("camara") },
+                onLogout = {
+                    scope.launch {
+                        dataStore.setLoggedIn(false)
+                    }
+                    navController.navigate("login") {
+                        popUpTo("home") { inclusive = true }
+                    }
+                }
             )
+        }
+
+        // 📷 CÁMARA
+        composable("camara") {
+            CamaraCapture()
         }
 
         // 🛒 CATÁLOGO
@@ -86,6 +104,8 @@ fun NavegacionPantallas(modifier: Modifier = Modifier) {
 fun HomeMenu(
     onOpenCatalogo: () -> Unit,
     onOpenCarrito: () -> Unit,
+    onOpenCamara: () -> Unit,
+    onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -104,7 +124,7 @@ fun HomeMenu(
 
         // 🖼️ Imagen debajo del texto
         Image(
-            painter = painterResource(id = R.drawable.logo), // 👈 usa tu imagen aquí
+            painter = painterResource(id = R.drawable.logo),
             contentDescription = "Logo Huerto Hogar",
             modifier = Modifier
                 .size(200.dp)
@@ -121,19 +141,28 @@ fun HomeMenu(
             items(
                 listOf(
                     "Catálogo" to onOpenCatalogo,
-                    "Carrito de compras" to onOpenCarrito
+                    "Carrito de compras" to onOpenCarrito,
+                    "Abrir cámara" to onOpenCamara
                 )
             ) { (label, action) ->
                 Button(
                     onClick = action,
-                    modifier = Modifier.fillMaxWidth(0.8f),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF22C55E)
-                    )
+                    modifier = Modifier.fillMaxWidth(0.8f)
                 ) {
                     Text(label)
                 }
             }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // 🔐 Botón para cerrar sesión
+        Button(
+            onClick = onLogout,
+            modifier = Modifier.fillMaxWidth(0.8f),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE11D48))
+        ) {
+            Text("Cerrar sesión", color = Color.White)
         }
     }
 }

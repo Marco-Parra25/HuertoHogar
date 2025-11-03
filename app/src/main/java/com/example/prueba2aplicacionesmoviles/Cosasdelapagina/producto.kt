@@ -1,5 +1,8 @@
 package com.example.prueba2aplicacionesmoviles.Cosasdelapagina
 
+import android.content.Context
+import android.os.VibrationEffect
+import android.os.Vibrator
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -7,13 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
@@ -29,6 +29,12 @@ fun CardInteractivaProducto(producto: Producto) {
     var titulo by remember(producto) { mutableStateOf(producto.titulo) }
     var precio by remember(producto) { mutableStateOf(producto.precio) }
 
+    // ⚙️ Contexto para usar Vibrator
+    val context = LocalContext.current
+    val vibrator = remember {
+        context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+    }
+
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = Modifier.padding(16.dp)
@@ -40,6 +46,7 @@ fun CardInteractivaProducto(producto: Producto) {
             precio = precio,
             modifier = Modifier.fillMaxWidth()
         )
+
         Button(
             onClick = {
                 val pFinal = producto.copy(
@@ -47,10 +54,23 @@ fun CardInteractivaProducto(producto: Producto) {
                     precio = precio
                 )
                 carrito.add(pFinal)
+
+                // 🔔 Vibración al agregar producto
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    vibrator.vibrate(
+                        VibrationEffect.createOneShot(
+                            100, // duración en milisegundos
+                            VibrationEffect.DEFAULT_AMPLITUDE
+                        )
+                    )
+                } else {
+                    @Suppress("DEPRECATION")
+                    vibrator.vibrate(100)
+                }
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF22C55E)
+                containerColor = Color(0xFF22C55E) // verde visible
             )
         ) {
             Text("Agregar al carrito")
