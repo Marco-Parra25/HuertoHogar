@@ -1,6 +1,5 @@
-package com.example.prueba2aplicacionesmoviles.Cosasdelapagina
+package com.example.prueba2aplicacionesmoviles.cosasdelapagina
 
-import android.app.Application
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image

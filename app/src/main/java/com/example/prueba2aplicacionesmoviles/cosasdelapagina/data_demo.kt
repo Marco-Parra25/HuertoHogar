@@ -1,4 +1,4 @@
-package com.example.prueba2aplicacionesmoviles.Cosasdelapagina
+package com.example.prueba2aplicacionesmoviles.cosasdelapagina
 
 import com.example.prueba2aplicacionesmoviles.R
 

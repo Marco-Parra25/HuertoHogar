@@ -1,4 +1,4 @@
-package com.example.prueba2aplicacionesmoviles.Cosasdelapagina
+package com.example.prueba2aplicacionesmoviles.cosasdelapagina
 
 import androidx.compose.runtime.mutableStateListOf
 

@@ -1,4 +1,4 @@
-package com.example.prueba2aplicacionesmoviles.Cosasdelapagina
+package com.example.prueba2aplicacionesmoviles.cosasdelapagina
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*

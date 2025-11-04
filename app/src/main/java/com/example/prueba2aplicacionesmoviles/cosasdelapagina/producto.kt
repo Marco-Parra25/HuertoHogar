@@ -1,4 +1,4 @@
-package com.example.prueba2aplicacionesmoviles.Cosasdelapagina
+package com.example.prueba2aplicacionesmoviles.cosasdelapagina
 
 import android.content.Context
 import android.os.VibrationEffect

@@ -1,4 +1,4 @@
-package com.example.prueba2aplicacionesmoviles.Cosasdelapagina
+package com.example.prueba2aplicacionesmoviles.cosasdelapagina
 
 import android.app.Activity
 import android.content.Intent

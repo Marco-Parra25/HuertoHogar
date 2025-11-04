@@ -10,7 +10,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.example.prueba2aplicacionesmoviles.Cosasdelapagina.NavegacionPantallas
+import com.example.prueba2aplicacionesmoviles.cosasdelapagina.NavegacionPantallas
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
