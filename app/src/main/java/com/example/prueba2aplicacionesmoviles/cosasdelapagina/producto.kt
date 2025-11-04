@@ -29,10 +29,16 @@ fun CardInteractivaProducto(producto: Producto) {
     var titulo by remember(producto) { mutableStateOf(producto.titulo) }
     var precio by remember(producto) { mutableStateOf(producto.precio) }
 
-    // ⚙️ Contexto para usar Vibrator
+    // ⚙️ Contexto para obtener vibrator
     val context = LocalContext.current
     val vibrator = remember {
-        context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            val manager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as android.os.VibratorManager
+            manager.defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        }
     }
 
     Column(
@@ -59,7 +65,7 @@ fun CardInteractivaProducto(producto: Producto) {
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                     vibrator.vibrate(
                         VibrationEffect.createOneShot(
-                            100, // duración en milisegundos
+                            100, // duración
                             VibrationEffect.DEFAULT_AMPLITUDE
                         )
                     )
