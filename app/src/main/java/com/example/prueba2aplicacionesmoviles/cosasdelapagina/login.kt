@@ -1,6 +1,9 @@
 package com.example.prueba2aplicacionesmoviles.cosasdelapagina
 
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -38,6 +41,7 @@ fun LoginScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var showError by remember { mutableStateOf(false) }
+    var mensajeError by remember { mutableStateOf("") }
 
     val camposValidos = email.isNotBlank() && password.isNotBlank()
     val scroll = rememberScrollState()
@@ -52,6 +56,7 @@ fun LoginScreen(
             .verticalScroll(scroll),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // 🌿 Título
         Text(
             text = "Bienvenido a Huerto Hogar 🌿",
             color = Color.White,
@@ -60,6 +65,7 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // 🖼️ Logo animado
         AnimatedVisibility(
             visible = logoVisible,
             enter = fadeIn(tween(700)) + scaleIn(tween(700)),
@@ -76,11 +82,13 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // ✉️ Campo de correo
         OutlinedTextField(
             value = email,
             onValueChange = {
                 email = it
                 showError = false
+                mensajeError = ""
             },
             label = { Text("Correo electrónico", color = Color.White) },
             textStyle = LocalTextStyle.current.copy(color = Color.White),
@@ -94,11 +102,13 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // 🔒 Contraseña
         OutlinedTextField(
             value = password,
             onValueChange = {
                 password = it
                 showError = false
+                mensajeError = ""
             },
             label = { Text("Contraseña", color = Color.White) },
             textStyle = LocalTextStyle.current.copy(color = Color.White),
@@ -113,7 +123,7 @@ fun LoginScreen(
 
         if (showError) {
             Text(
-                text = "Por favor completa todos los campos antes de continuar",
+                text = mensajeError,
                 color = Color.Red,
                 modifier = Modifier.padding(top = 8.dp)
             )
@@ -124,13 +134,21 @@ fun LoginScreen(
         // ✅ Botón iniciar sesión
         Button(
             onClick = {
-                if (camposValidos) {
-                    scope.launch {
-                        dataStore.setLoggedIn(true) // Guarda la sesión
+                when {
+                    email.isBlank() || password.isBlank() -> {
+                        showError = true
+                        mensajeError = "Por favor completa todos los campos"
                     }
-                    onLoginSuccess()
-                } else {
-                    showError = true
+                    !esCorreoValido(email) -> {
+                        showError = true
+                        mensajeError = "El formato del correo no es válido (ej: usuario@dominio.com)"
+                    }
+                    else -> {
+                        scope.launch {
+                            dataStore.setLoggedIn(true)
+                        }
+                        onLoginSuccess()
+                    }
                 }
             },
             modifier = Modifier.fillMaxWidth(),

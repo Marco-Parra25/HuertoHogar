@@ -19,7 +19,8 @@ fun RegisterScreen(onVolver: () -> Unit) {
     var showError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
 
-    val camposValidos = nombre.isNotBlank() && email.isNotBlank() && password.isNotBlank() && confirmPassword.isNotBlank()
+    val camposValidos =
+        nombre.isNotBlank() && email.isNotBlank() && password.isNotBlank() && confirmPassword.isNotBlank()
 
     Column(
         modifier = Modifier
@@ -42,6 +43,7 @@ fun RegisterScreen(onVolver: () -> Unit) {
             onValueChange = {
                 nombre = it
                 showError = false
+                errorMessage = ""
             },
             label = { Text("Nombre completo", color = Color.White) },
             textStyle = LocalTextStyle.current.copy(color = Color.White),
@@ -61,6 +63,7 @@ fun RegisterScreen(onVolver: () -> Unit) {
             onValueChange = {
                 email = it
                 showError = false
+                errorMessage = ""
             },
             label = { Text("Correo electrónico", color = Color.White) },
             textStyle = LocalTextStyle.current.copy(color = Color.White),
@@ -80,6 +83,7 @@ fun RegisterScreen(onVolver: () -> Unit) {
             onValueChange = {
                 password = it
                 showError = false
+                errorMessage = ""
             },
             label = { Text("Contraseña", color = Color.White) },
             textStyle = LocalTextStyle.current.copy(color = Color.White),
@@ -100,6 +104,7 @@ fun RegisterScreen(onVolver: () -> Unit) {
             onValueChange = {
                 confirmPassword = it
                 showError = false
+                errorMessage = ""
             },
             label = { Text("Confirmar contraseña", color = Color.White) },
             textStyle = LocalTextStyle.current.copy(color = Color.White),
@@ -130,18 +135,22 @@ fun RegisterScreen(onVolver: () -> Unit) {
                         errorMessage = "Por favor completa todos los campos"
                         showError = true
                     }
+                    !esCorreoValido(email) -> {
+                        errorMessage = "El formato del correo no es válido (ej: usuario@dominio.com)"
+                        showError = true
+                    }
                     password != confirmPassword -> {
                         errorMessage = "Las contraseñas no coinciden"
                         showError = true
                     }
                     else -> {
                         showError = false
-                        // Aquí podrías guardar los datos (cuando hagamos persistencia)
                         onVolver()
                     }
                 }
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF22C55E))
         ) {
             Text("Registrarse")
         }
@@ -151,7 +160,8 @@ fun RegisterScreen(onVolver: () -> Unit) {
         // 🔙 Botón Volver
         Button(
             onClick = onVolver,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF38BDF8))
         ) {
             Text("Volver", color = Color.White)
         }
