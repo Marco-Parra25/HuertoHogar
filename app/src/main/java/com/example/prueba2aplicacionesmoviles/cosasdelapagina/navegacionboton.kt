@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun NavegacionPantallas(modifier: Modifier = Modifier) {
+
     val navController = rememberNavController()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -59,7 +60,7 @@ fun NavegacionPantallas(modifier: Modifier = Modifier) {
                 onOpenCatalogo = { navController.navigate("catalogo") },
                 onOpenCarrito = { navController.navigate("carrito") },
                 onOpenCamara = { navController.navigate("camara") },
-                onOpenClima = { navController.navigate("clima") }, // ← AGREGADO
+                onOpenClima = { navController.navigate("clima") },
                 onLogout = {
                     scope.launch {
                         dataStore.setLoggedIn(false)
@@ -70,7 +71,6 @@ fun NavegacionPantallas(modifier: Modifier = Modifier) {
                 }
             )
         }
-
 
         // 📷 CÁMARA
         composable("camara") {
@@ -88,14 +88,25 @@ fun NavegacionPantallas(modifier: Modifier = Modifier) {
             )
         }
 
-        // 📦 DETALLE PRODUCTO
+        // 📦 DETALLE DEL PRODUCTO
         composable("detalle/{id}") { backStackEntry ->
             val id = backStackEntry.arguments?.getString("id")?.toLongOrNull() ?: 0L
 
             DetalleProducto(
                 id = id,
                 onVolver = { navController.popBackStack() },
-                onIrCarrito = { navController.navigate("carrito") }
+                onIrCarrito = { navController.navigate("carrito") },
+                onEdit = { navController.navigate("editar/$it") }
+            )
+        }
+
+        // 🔥 EDITAR PRODUCTO
+        composable("editar/{id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id")?.toLongOrNull() ?: 0L
+
+            EditarProductoScreen(
+                id = id,
+                onVolver = { navController.popBackStack() }
             )
         }
 
@@ -105,13 +116,13 @@ fun NavegacionPantallas(modifier: Modifier = Modifier) {
                 navController.popBackStack()
             }
         }
+
         // 🌤️ CLIMA
         composable("clima") {
             ClimaScreen(
                 onVolver = { navController.popBackStack() }
             )
         }
-
     }
 }
 
@@ -123,8 +134,8 @@ fun HomeMenu(
     onOpenClima: () -> Unit,
     onLogout: () -> Unit,
     modifier: Modifier = Modifier
-)
- {
+) {
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -132,25 +143,24 @@ fun HomeMenu(
         verticalArrangement = Arrangement.spacedBy(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // 🌿 Título principal
+
+        // 🌿 Título
         Text(
             text = "Bienvenidos a Huerto Hogar",
             color = Color.White,
             style = MaterialTheme.typography.headlineMedium
         )
 
-        // 🖼️ Imagen debajo del texto
+        // 🖼️ Logo
         Image(
             painter = painterResource(id = R.drawable.logo),
             contentDescription = "Logo Huerto Hogar",
-            modifier = Modifier
-                .size(200.dp)
-                .padding(top = 8.dp)
+            modifier = Modifier.size(200.dp).padding(top = 8.dp)
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // 🪴 Botones del Home
+        // 🪴 Botones Home
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -162,8 +172,7 @@ fun HomeMenu(
                     "Abrir cámara" to onOpenCamara,
                     "Clima 🌤️" to onOpenClima
                 )
-            )
-            { (label, action) ->
+            ) { (label, action) ->
                 Button(
                     onClick = action,
                     modifier = Modifier.fillMaxWidth(0.8f)
@@ -175,7 +184,7 @@ fun HomeMenu(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // 🔐 Botón para cerrar sesión
+        // 🔐 Cerrar sesión
         Button(
             onClick = onLogout,
             modifier = Modifier.fillMaxWidth(0.8f),
