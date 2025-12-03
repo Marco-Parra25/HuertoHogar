@@ -18,36 +18,46 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.prueba2aplicacionesmoviles.R
+import com.example.prueba2aplicacionesmoviles.viewmodel.AuthViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
     onLoginSuccess: () -> Unit,
-    onRegister: () -> Unit
+    onRegister: () -> Unit,
+    viewModel: AuthViewModel = viewModel()
 ) {
     val context = LocalContext.current
     val dataStore = remember { SesionDataStore(context) }
     val scope = rememberCoroutineScope()
-    val isLogged by dataStore.isLogged.collectAsState(initial = false)
 
-    // Si ya está logueado, ir directo al Home
-    LaunchedEffect(isLogged) {
-        if (isLogged) {
-            onLoginSuccess()
-        }
-    }
+    // Estado del login del ViewModel
+    val loginState by viewModel.loginState.collectAsState()
 
-    var email by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var showError by remember { mutableStateOf(false) }
     var mensajeError by remember { mutableStateOf("") }
 
-    val camposValidos = email.isNotBlank() && password.isNotBlank()
     val scroll = rememberScrollState()
-
     var logoVisible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { logoVisible = true }
+
+    LaunchedEffect(loginState) {
+        if (loginState == "ERROR") {
+            showError = true
+            mensajeError = "Usuario o contraseña incorrectos"
+        } else if (loginState != null) {
+            scope.launch {
+                dataStore.saveToken(loginState!!)   // token real
+                dataStore.setLoggedIn(true)
+            }
+            onLoginSuccess()
+        }
+    }
+
 
     Column(
         modifier = Modifier
@@ -56,7 +66,6 @@ fun LoginScreen(
             .verticalScroll(scroll),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // 🌿 Título
         Text(
             text = "Bienvenido a Huerto Hogar 🌿",
             color = Color.White,
@@ -65,7 +74,6 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // 🖼️ Logo animado
         AnimatedVisibility(
             visible = logoVisible,
             enter = fadeIn(tween(700)) + scaleIn(tween(700)),
@@ -74,23 +82,20 @@ fun LoginScreen(
             Image(
                 painter = painterResource(id = R.drawable.huerto),
                 contentDescription = "Logo Huerto Hogar",
-                modifier = Modifier
-                    .size(300.dp)
-                    .padding(top = 8.dp)
+                modifier = Modifier.size(300.dp)
             )
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // ✉️ Campo de correo
+        // USUARIO
         OutlinedTextField(
-            value = email,
+            value = username,
             onValueChange = {
-                email = it
+                username = it
                 showError = false
-                mensajeError = ""
             },
-            label = { Text("Correo electrónico", color = Color.White) },
+            label = { Text("Usuario", color = Color.White) },
             textStyle = LocalTextStyle.current.copy(color = Color.White),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color.White,
@@ -102,13 +107,12 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 🔒 Contraseña
+        // CONTRASEÑA
         OutlinedTextField(
             value = password,
             onValueChange = {
                 password = it
                 showError = false
-                mensajeError = ""
             },
             label = { Text("Contraseña", color = Color.White) },
             textStyle = LocalTextStyle.current.copy(color = Color.White),
@@ -131,24 +135,15 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // ✅ Botón iniciar sesión
+        // BOTÓN LOGIN
         Button(
             onClick = {
                 when {
-                    email.isBlank() || password.isBlank() -> {
+                    username.isBlank() || password.isBlank() -> {
                         showError = true
                         mensajeError = "Por favor completa todos los campos"
                     }
-                    !esCorreoValido(email) -> {
-                        showError = true
-                        mensajeError = "El formato del correo no es válido (ej: usuario@dominio.com)"
-                    }
-                    else -> {
-                        scope.launch {
-                            dataStore.setLoggedIn(true)
-                        }
-                        onLoginSuccess()
-                    }
+                    else -> viewModel.login(username, password)
                 }
             },
             modifier = Modifier.fillMaxWidth(),
@@ -159,7 +154,6 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // 📝 Botón registrarse
         Button(
             onClick = onRegister,
             modifier = Modifier.fillMaxWidth(),

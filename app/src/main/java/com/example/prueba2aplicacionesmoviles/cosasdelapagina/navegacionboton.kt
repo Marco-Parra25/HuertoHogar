@@ -37,6 +37,7 @@ fun NavegacionPantallas(modifier: Modifier = Modifier) {
             .fillMaxSize()
             .statusBarsPadding()
     ) {
+
         // 🟢 LOGIN
         composable("login") {
             LoginScreen(
@@ -47,7 +48,9 @@ fun NavegacionPantallas(modifier: Modifier = Modifier) {
 
         // 📝 REGISTER
         composable("register") {
-            RegisterScreen { navController.popBackStack() }
+            RegisterScreen {
+                navController.popBackStack()
+            }
         }
 
         // 🏡 HOME
@@ -56,6 +59,7 @@ fun NavegacionPantallas(modifier: Modifier = Modifier) {
                 onOpenCatalogo = { navController.navigate("catalogo") },
                 onOpenCarrito = { navController.navigate("carrito") },
                 onOpenCamara = { navController.navigate("camara") },
+                onOpenClima = { navController.navigate("clima") }, // ← AGREGADO
                 onLogout = {
                     scope.launch {
                         dataStore.setLoggedIn(false)
@@ -67,6 +71,7 @@ fun NavegacionPantallas(modifier: Modifier = Modifier) {
             )
         }
 
+
         // 📷 CÁMARA
         composable("camara") {
             CamaraCapture()
@@ -75,8 +80,8 @@ fun NavegacionPantallas(modifier: Modifier = Modifier) {
         // 🛒 CATÁLOGO
         composable("catalogo") {
             Catalogo(
-                onVerDetalle = { idx ->
-                    navController.navigate("detalle/$idx")
+                onVerDetalle = { id ->
+                    navController.navigate("detalle/$id")
                 },
                 onIrCarrito = { navController.navigate("carrito") },
                 onVolver = { navController.popBackStack() }
@@ -84,10 +89,11 @@ fun NavegacionPantallas(modifier: Modifier = Modifier) {
         }
 
         // 📦 DETALLE PRODUCTO
-        composable("detalle/{index}") { backStackEntry ->
-            val idx = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 0
+        composable("detalle/{id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id")?.toLongOrNull() ?: 0L
+
             DetalleProducto(
-                index = idx,
+                id = id,
                 onVolver = { navController.popBackStack() },
                 onIrCarrito = { navController.navigate("carrito") }
             )
@@ -95,8 +101,17 @@ fun NavegacionPantallas(modifier: Modifier = Modifier) {
 
         // 🛍️ CARRITO
         composable("carrito") {
-            CarritoScreen { navController.popBackStack() }
+            CarritoScreen {
+                navController.popBackStack()
+            }
         }
+        // 🌤️ CLIMA
+        composable("clima") {
+            ClimaScreen(
+                onVolver = { navController.popBackStack() }
+            )
+        }
+
     }
 }
 
@@ -105,9 +120,11 @@ fun HomeMenu(
     onOpenCatalogo: () -> Unit,
     onOpenCarrito: () -> Unit,
     onOpenCamara: () -> Unit,
+    onOpenClima: () -> Unit,
     onLogout: () -> Unit,
     modifier: Modifier = Modifier
-) {
+)
+ {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -142,9 +159,11 @@ fun HomeMenu(
                 listOf(
                     "Catálogo" to onOpenCatalogo,
                     "Carrito de compras" to onOpenCarrito,
-                    "Abrir cámara" to onOpenCamara
+                    "Abrir cámara" to onOpenCamara,
+                    "Clima 🌤️" to onOpenClima
                 )
-            ) { (label, action) ->
+            )
+            { (label, action) ->
                 Button(
                     onClick = action,
                     modifier = Modifier.fillMaxWidth(0.8f)
